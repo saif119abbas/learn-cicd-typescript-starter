@@ -14,6 +14,6 @@ describe("person", () => {
     expect(person.isActive).toBeTruthy();
   });
   test("age to be 32", () => {
-    expect(person.age).toEqual(32)
+    expect(person.age).toEqual(32);
   });
 });
