@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
-    name: Deploy
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -24,17 +24,27 @@ jobs:
       - name: Build code
         run: npm run build
 
-      # Authenticate to Google Cloud
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
       - id: auth
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
-      # Install gcloud CLI
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v3
 
-      # Verify gcloud works
       - name: Test gcloud
         run: gcloud info
+      - name: Build notely image
+        run: gcloud builds submit --tag  us-central1-docker.pkg.dev/notely-489319/notely-ar-repo/notely:latest .
+        
