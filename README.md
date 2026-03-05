@@ -1,5 +1,4 @@
-[![CI](https://github.com/saif119abbas/learn-cicd-typescript-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/saif119abbas/learn-cicd-typescript-starter/actions/workflows/ci.yml)
-
+[![CI Status](https://github.com/saif119abbas/learn-cicd-typescript-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/saif119abbas/learn-cicd-typescript-starter/actions/workflows/ci.yml)
 
 # learn-cicd-typescript-starter (Notely)
 
