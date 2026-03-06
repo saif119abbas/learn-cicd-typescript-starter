@@ -5,9 +5,11 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    name: Build
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - name: Check out code
@@ -21,31 +23,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Upload dependencies
-        uses: actions/upload-artifact@v4
-        with:
-          name: node-modules
-          path: node_modules
-
       - name: Build code
         run: npm run build
-
-
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs: build
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
 
       - id: auth
         name: Authenticate to Google Cloud
@@ -56,27 +35,21 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v3
 
-      - name: Download dependencies
-        uses: actions/download-artifact@v4
-        with:
-          name: node-modules
-          path: .
-
       - name: Test gcloud
         run: gcloud info
 
+        
       - name: Build notely image
         run: gcloud builds submit --tag us-central1-docker.pkg.dev/notely-489319/notely-ar-repo/notely:latest .
-
+        
       - name: Run migration
         run: npm run db:migrate
 
       - name: Deploy to Cloud Run
-        run: gcloud run deploy notely \
+        run: |
+          gcloud run deploy notely \
           --image us-central1-docker.pkg.dev/notely-489319/notely-ar-repo/notely:latest \
           --region us-central1 \
           --allow-unauthenticated \
           --project notely-489319 \
           --max-instances=4
-
-        
